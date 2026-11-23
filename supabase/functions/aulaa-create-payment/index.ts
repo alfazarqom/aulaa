@@ -26,8 +26,8 @@ Deno.serve(async (req: Request) => {
 
   const orderId = typeof input.order_id === "string" ? input.order_id.trim() : "";
   const amount = input.amount;
-  if (!orderId || !Number.isSafeInteger(amount) || (amount as number) < 1000 ||
-      (amount as number) > 500000000) {
+  if (!orderId || typeof amount !== "number" || !Number.isSafeInteger(amount) || amount < 1000 ||
+      amount > 500000000) {
     return json({ error: "order_id and integer amount (IDR 1,000–500,000,000) are required" }, 400);
   }
 
