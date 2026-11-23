@@ -1,0 +1,45 @@
+name: Test Aulaa Edge Functions
+
+on:
+  push:
+    branches:
+      - feature/aulaa-payment-minimal
+    paths:
+      - "supabase/functions/**"
+      - ".github/workflows/test-aulaa-functions.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "supabase/functions/**"
+      - ".github/workflows/test-aulaa-functions.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aulaa-functions-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Check Edge Functions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.1.4
+
+      - name: Type-check create-payment
+        run: deno check supabase/functions/aulaa-create-payment/index.ts
+
+      - name: Type-check webhook
+        run: deno check supabase/functions/aulaa-webhook/index.ts
+
+      - name: Lint Edge Functions
+        run: deno lint supabase/functions/aulaa-create-payment supabase/functions/aulaa-webhook
